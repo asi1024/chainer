@@ -607,6 +607,63 @@ Note:
 .. seealso:: :func:`numpy.linalg.inv`
 """)
 
+    _docs.set_doc(
+        chainerx.linalg.svd,
+        """svd(a, full_matrices=True, compute_uv=True)
+Singular Value Decomposition.
+
+Factorizes the matrix ``a`` into two unitary matrices ``U`` and ``Vt``, and
+a 1-D array ``s`` of singular values such that
+``a == U * S * Vt``, where ``S`` is a suitably shaped matrix of zeros with
+main diagonal ``s`` and ``*`` represents a dot product.
+
+Args:
+    a (~chainerx.ndarray): The input matrix with dimension ``(M, N)``.
+    full_matrices (bool): If True, it returns u and v with dimensions
+        ``(M, M)`` and ``(N, N)``. Otherwise, the dimensions of u and v
+        are respectively ``(M, K)`` and ``(K, N)``, where
+        ``K = min(M, N)``.
+    compute_uv (bool): If False, only singular values are computed.
+
+Returns:
+    tuple of :class:`chainerx.ndarray`:
+        A tuple of ``(U, s, Vt)`` such that ``a = U * diag(s) * Vt``.
+        When ``compute_uv`` is False only singular values ``s`` are returned.
+
+Note:
+    * The ``dtype`` must be ``float32`` or ``float64`` (``float16`` is not
+      supported yet.)
+    * The SVD is commonly written as `a = U * diag(s) * V^T`.
+      The ``Vt`` returned by this function is `V^T`.
+    * During backpropagation, this function requires ``U`` and ``Vt`` computed,
+      therefore differentiation does not work for ``compute_uv=False``.
+    * Backpropagation is not implemented for ``full_matrices=True``.
+
+.. seealso:: :func:`numpy.linalg.svd`
+""")
+
+    _docs.set_doc(
+        chainerx.linalg.pinv,
+        """pinv(a, rcond=1e-15)
+Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+Calculate the generalized inverse of a matrix using its singular-value
+decomposition (SVD) and including all large singular values.
+
+Args:
+    a (~chainerx.ndarray): The input matrix to be pseudo-inverted.
+    rcond (float): Cutoff for small singular values.
+
+Returns:
+    :class:`~chainerx.ndarray`: The pseudo-inverse of ``a``.
+
+Note:
+    The ``dtype`` must be ``float32`` or ``float64`` (``float16`` is not
+    supported yet.)
+
+.. seealso:: :func:`numpy.linalg.pinv`
+""")
+
 
 def _docs_logic():
     _docs.set_doc(
@@ -1241,6 +1298,27 @@ Note:
 """)
 
     _docs.set_doc(
+        chainerx.repeat,
+        """repeat(a, repeats, axis=None)
+Constructs an array by repeating a given array.
+
+Args:
+    a (~chainerx.ndarray): Array to repeat.
+    repeats (int or tuple of ints): The number of times which each
+        element of a is repeated.
+    axis (int): The axis along which to repeat values.
+
+Returns:
+    ~chainerx.ndarray: The repeated output array.
+
+Note:
+    During backpropagation, this function propagates the gradient of the
+    output array to the input array ``a``.
+
+.. seealso:: :func:`numpy.repeat`
+""")
+
+    _docs.set_doc(
         chainerx.expand_dims,
         """expand_dims(a, axis)
 Expand the shape of an array.
@@ -1497,27 +1575,6 @@ Note:
     not supported yet.
 
 .. seealso:: :data:`numpy.maximum`
-""")
-
-    _docs.set_doc(
-        chainerx.mod,
-        """mod(x1, x2)
-Same as `chainerx.remainder`
-
-Args:
-    x1 (~chainerx.ndarray or scalar): Input array.
-    x2 (~chainerx.ndarray or scalar): Input array.
-
-Returns:
-    :class:`~chainerx.ndarray`:
-        Returned array: The element-wise remainder of
-        the quotient ``floor_divide(x1, x2)``.
-
-Note:
-    During backpropagation, this function propagates the gradient of the
-    output array to the input arrays ``x1`` and ``x2``.
-
-.. seealso:: :data:`numpy.mod`
 """)
 
     _docs.set_doc(

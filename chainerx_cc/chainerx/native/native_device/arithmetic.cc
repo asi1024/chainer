@@ -239,16 +239,11 @@ int64_t Mod(int64_t x, int64_t y) {
     if (x == 0 || y == 0) {
         return 0;
     }
-    if (x < 0) {
-        if (y > 0) {
-            return (y - (-x) % y) % y;
-        }
-        return -(-x % (-y));
+    int64_t ret = x % y;
+    if ((ret > 0 && y < 0) || (ret < 0 && y > 0)) {
+        return y + ret;
     }
-    if (y < 0) {
-        return (y + x % (-y)) % y;
-    }
-    return x % y;
+    return ret;
 }
 int8_t Mod(int8_t x, int8_t y) { return static_cast<int8_t>(Mod(static_cast<int64_t>(x), static_cast<int64_t>(y))); }
 int16_t Mod(int16_t x, int16_t y) { return static_cast<int16_t>(Mod(static_cast<int64_t>(x), static_cast<int64_t>(y))); }
@@ -259,36 +254,19 @@ uint8_t Mod(uint8_t x, uint8_t y) {
     }
     return x % y;
 }
-float Mod(float x, float y) {
-    if (x == 0 || y == 0) {
-        return 0;
+template <typename T>
+T ModFloatImpl(T x, T y) {
+    if (y == 0) {
+        return NAN;
     }
-    if (x < 0) {
-        if (y > 0) {
-            return std::fmod(y - std::fmod(-x, y), y);
-        }
-        return -std::fmod(-x, -y);
+    T ret = std::fmod(x, y);
+    if ((ret > 0 && y < 0) || (ret < 0 && y > 0)) {
+        return y + ret;
     }
-    if (y < 0) {
-        return std::fmod(y + std::fmod(x, -y), y);
-    }
-    return std::fmod(x, y);
+    return ret;
 }
-double Mod(double x, double y) {
-    if (x == 0 || y == 0) {
-        return 0;
-    }
-    if (x < 0) {
-        if (y > 0) {
-            return std::fmod(y - std::fmod(-x, y), y);
-        }
-        return -std::fmod(-x, -y);
-    }
-    if (y < 0) {
-        return std::fmod(y + std::fmod(x, -y), y);
-    }
-    return std::fmod(x, y);
-}
+double Mod(double x, double y) { return ModFloatImpl(x, y); }
+float Mod(float x, float y) { return ModFloatImpl(x, y); }
 chainerx::Float16 Mod(chainerx::Float16 x, chainerx::Float16 y) {
     return chainerx::Float16{Mod(static_cast<float>(x), static_cast<float>(y))};
 }
