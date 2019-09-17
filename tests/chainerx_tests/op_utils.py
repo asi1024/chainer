@@ -1,4 +1,5 @@
 import inspect
+import os
 import sys
 import unittest
 
@@ -8,6 +9,12 @@ import pytest
 import chainer
 import chainer.testing
 import chainerx
+
+
+_repeat = os.getenv('REPEAT', 1)
+_forward_repeat = int(os.getenv('FORWARD_REPEAT', _repeat))
+_backward_repeat = int(os.getenv('BACKWARD_REPEAT', _repeat))
+_double_backward_repeat = int(os.getenv('DOUBLE_BACKWARD_REPEAT', _repeat))
 
 
 class OpTest(chainer.testing.function_link.FunctionTestBase):
@@ -85,21 +92,24 @@ class OpTest(chainer.testing.function_link.FunctionTestBase):
         if self.skip_forward_test:
             raise unittest.SkipTest('skip_forward_test is set')
 
-        super(OpTest, self).run_test_forward(backend_config)
+        for i in range(_forward_repeat):
+            super(OpTest, self).run_test_forward(backend_config)
 
     def run_test_backward(self, backend_config):
         # Skipping Backward -> Test PASS
         if self.skip_backward_test:
             return
 
-        super(OpTest, self).run_test_backward(backend_config)
+        for i in range(_backward_repeat):
+            super(OpTest, self).run_test_backward(backend_config)
 
     def run_test_double_backward(self, backend_config):
         # Skipping Double Backward -> Test PASS
         if self.skip_double_backward_test:
             return
 
-        super(OpTest, self).run_test_double_backward(backend_config)
+        for i in range(_double_backward_repeat):
+            super(OpTest, self).run_test_double_backward(backend_config)
 
 
 class ChainerOpTest(OpTest):
